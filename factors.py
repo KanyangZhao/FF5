@@ -6,7 +6,7 @@ from numpy import vectorize
 
 from preprocess import generateDate
 
-data_path = 'data/preprocessed'
+data_path = 'data/preprocessed/'
 phase = {
     "2016": generateDate("2016-07-31", "2017-06-30"),
     "2017": generateDate("2017-07-31", "2018-01-31")
@@ -97,7 +97,7 @@ class Grouping:
             cols = {}
         if axis == len(self.groups):
             cols['data'] = [df]
-            self.frame = self.frame.append(pd.DataFrame(cols, index=[len(self.frame)]), sort=True)
+            self.frame = pd.concat([self.frame, pd.DataFrame(cols, index=[len(self.frame)])], ignore_index=True, sort=True)
             return
 
         for group in self.groups[axis]:
@@ -231,6 +231,8 @@ def FF5(t):
                             pd.merge(HML_MethodOne(t),
                                      pd.merge(RMW_MethodOne(t), CMA_MethodOne(t), on=['date']), on=['date']),
                             on=['date']), on=['date'])
+    factor_result_path = os.path.join("factor_result")
+    if not os.path.exists(factor_result_path): os.makedirs(factor_result_path)
     res.to_csv(os.path.join("factor_result", t + "FF5.csv"), index=False)
 
 
@@ -261,16 +263,20 @@ def PortfolioExcessReturn(t, row_type, row_num, col_type='Size', col_num=5, csv=
                              "ExcessReturn": g.getVMExcessReturn(currentPhase, section=[row_count, col_count])}
                             , index=[i for i in range(len(currentPhase))])
 
-    df = pd.DataFrame().append(
-        list(formatDataframe(np.arange(0, row_num * col_num, 1) % row_num,
-                             np.arange(0, row_num * col_num, 1) // row_num))
-    )
+    df_list = formatDataframe(np.arange(0, row_num * col_num, 1) % row_num,
+                             np.arange(0, row_num * col_num, 1) // row_num)
+    df = pd.DataFrame()
+    for df_new in df_list:
+        df = pd.concat([df, df_new], ignore_index=True)
     if csv:
+        group_result_path = os.path.join("group_result")
+        if not os.path.exists(group_result_path): os.makedirs(group_result_path)
         df.to_csv(os.path.join("group_result", t + "_" + row_type + "_" + col_type + ".csv"), index=False)
     return df
 
 
 if __name__ == '__main__':
+
     FF5(['2016', '2017'])
     PortfolioExcessReturn('2016', 'OP', 5)
     PortfolioExcessReturn('2017', 'OP', 5)
