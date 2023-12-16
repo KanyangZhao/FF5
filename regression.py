@@ -2,21 +2,22 @@ import pandas as pd
 import numpy as np
 import os
 import statsmodels.api as sm
+import warnings
+# 过滤所有警告
+warnings.filterwarnings("ignore")
+
 
 # 读取并合并ff5数据
 data1 = pd.read_csv("factor_result/2016FF5.csv")
 data2 = pd.read_csv("factor_result/2017FF5.csv")
 data_ff5 = pd.concat([data1,data2], ignore_index=True, sort=True)
 data_ff5 = data_ff5.reset_index(drop=True)
-print(data_ff5.columns)
 # 读取分组超额收益率数据
 for fac in ['BM', 'Inv', 'OP']:
     data1 = pd.read_csv("group_result/2016_" + fac + "_Size.csv")
     data2 = pd.read_csv("group_result/2017_" + fac + "_Size.csv")
-    print(data1.columns)
     if fac == 'BM':
         Size_BM = pd.concat([data1,data2], ignore_index=True, sort=True)
-        print(Size_BM.dtypes)
     elif fac == 'Inv':
         Size_Inv = pd.concat([data1,data2], ignore_index=True, sort=True)
     elif fac == 'OP':
@@ -33,8 +34,6 @@ for i in range(1, x_ + 1):
         X = sm.add_constant(X)
         y = Size_BM[(Size_BM['row_count'] == i) & (Size_BM['col_count'] == j)].loc[:, 'ExcessReturn']
         y = y.reset_index(drop=True)
-        print(y)
-        print(X)
         model = sm.OLS(y, X)
         results = model.fit()
         regression_BM.loc[len(regression_BM)] = pd.Series({'Size': i, 'BM': j, 'Const': results.params[0],
@@ -211,9 +210,6 @@ regression_factors_pvalue.loc[len(regression_factors_pvalue)] = pd.Series({'DepV
                                                                'Mktrf_p': results.pvalues[1], 'SMB_p': results.pvalues[2],
                                                                'HML_p': results.pvalues[3], 'RMW_p': results.pvalues[4],
                                                                'CMA_p': 0})
-
-regression_result_path = os.path.join("regression_result")
-if not os.path.exists(regression_result_path): os.makedirs(regression_result_path)
 
 regression_factors.to_csv('regression_result/regression_factors.csv', index=False)
 regression_factors_tvalue.to_csv('regression_result/regression_factors_tvalue.csv', index=False)
