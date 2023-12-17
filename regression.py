@@ -26,6 +26,7 @@ for fac in ['BM', 'Inv', 'OP']:
 regression_BM = pd.DataFrame(columns=['Size', 'BM', 'Const', 'Mktrf', 'SMB', 'HML', 'RMW', 'CMA', 'R-squared'])
 regression_BM_pvalue = pd.DataFrame(columns=['Size', 'BM', 'Const_p', 'Mktrf_p', 'SMB_p', 'HML_p', 'RMW_p', 'CMA_p'])
 regression_BM_tvalue = pd.DataFrame(columns=['Size', 'OP', 'Const_t', 'Mktrf_t', 'SMB_t', 'HML_t', 'RMW_t', 'CMA_t'])
+regression_BM_resid = pd.DataFrame()
 x_ = Size_BM['row_count'].value_counts().shape[0]
 y_ = Size_BM['col_count'].value_counts().shape[0]
 for i in range(1, x_ + 1):
@@ -36,6 +37,8 @@ for i in range(1, x_ + 1):
         y = y.reset_index(drop=True)
         model = sm.OLS(y, X)
         results = model.fit()
+        regression_BM_resid = pd.concat([regression_BM_resid, pd.DataFrame(results.resid, columns=[str(i*10+j)])], axis = 1)
+
         regression_BM.loc[len(regression_BM)] = pd.Series({'Size': i, 'BM': j, 'Const': results.params[0],
                                                'Mktrf': results.params[1], 'SMB': results.params[2],
                                                'HML': results.params[3], 'RMW': results.params[4],
@@ -48,10 +51,12 @@ for i in range(1, x_ + 1):
                                                                          'Mktrf_t': results.tvalues[1], 'SMB_t': results.tvalues[2],
                                                                          'HML_t': results.tvalues[3], 'RMW_t': results.tvalues[4],
                                                                          'CMA_t': results.tvalues[5]})
+
 # 对Inv_Size分组进行五因子回归
 regression_Inv = pd.DataFrame(columns=['Size', 'Inv', 'Const', 'Mktrf', 'SMB', 'HML', 'RMW', 'CMA', 'R-squared'])
 regression_Inv_pvalue = pd.DataFrame(columns=['Size', 'Inv', 'Const_p', 'Mktrf_p', 'SMB_p', 'HML_p', 'RMW_p', 'CMA_p'])
 regression_Inv_tvalue = pd.DataFrame(columns=['Size', 'OP', 'Const_t', 'Mktrf_t', 'SMB_t', 'HML_t', 'RMW_t', 'CMA_t'])
+regression_Inv_resid = pd.DataFrame()
 x_ = Size_Inv['row_count'].value_counts().shape[0]
 y_ = Size_Inv['col_count'].value_counts().shape[0]
 for i in range(1, x_ + 1):
@@ -62,6 +67,7 @@ for i in range(1, x_ + 1):
         y = y.reset_index(drop=True)
         model = sm.OLS(y, X)
         results = model.fit()
+        regression_Inv_resid = pd.concat([regression_Inv_resid, pd.DataFrame(results.resid, columns=[str(i*10+j)])], axis = 1)
         regression_Inv.loc[len(regression_Inv)] = pd.Series({'Size': i, 'Inv': j, 'Const': results.params[0],
                                                  'Mktrf': results.params[1], 'SMB': results.params[2],
                                                  'HML': results.params[3], 'RMW': results.params[4],
@@ -75,10 +81,12 @@ for i in range(1, x_ + 1):
                                                                      'Mktrf_t': results.tvalues[1], 'SMB_t': results.tvalues[2],
                                                                      'HML_t': results.tvalues[3], 'RMW_t': results.tvalues[4],
                                                                      'CMA_t': results.tvalues[5]})
+
 # 对OP_Size分组进行五因子回归
 regression_OP = pd.DataFrame(columns=['Size', 'OP', 'Const', 'Mktrf', 'SMB', 'HML', 'RMW', 'CMA', 'R-squared'])
 regression_OP_pvalue = pd.DataFrame(columns=['Size', 'OP', 'Const_p', 'Mktrf_p', 'SMB_p', 'HML_p', 'RMW_p', 'CMA_p'])
 regression_OP_tvalue = pd.DataFrame(columns=['Size', 'OP', 'Const_t', 'Mktrf_t', 'SMB_t', 'HML_t', 'RMW_t', 'CMA_t'])
+regression_OP_resid = pd.DataFrame()
 x_ = Size_OP['row_count'].value_counts().shape[0]
 y_ = Size_OP['col_count'].value_counts().shape[0]
 for i in range(1, x_ + 1):
@@ -89,6 +97,7 @@ for i in range(1, x_ + 1):
         y = y.reset_index(drop=True)
         model = sm.OLS(y, X)
         results = model.fit()
+        regression_OP_resid = pd.concat([regression_OP_resid, pd.DataFrame(results.resid, columns=[str(i*10+j)])], axis = 1)
         regression_OP.loc[len(regression_OP)] = pd.Series({'Size': i, 'OP': j, 'Const': results.params[0],
                                                'Mktrf': results.params[1], 'SMB': results.params[2],
                                                'HML': results.params[3], 'RMW': results.params[4],
@@ -108,13 +117,15 @@ if not os.path.exists("regression_result/"):
 regression_BM.to_csv('regression_result/regression_BM.csv', index=False)
 regression_BM_pvalue.to_csv('regression_result/regression_BM_pvalue.csv', index=False)
 regression_BM_tvalue.to_csv('regression_result/regression_BM_tvalue.csv', index=False)
+regression_BM_resid.to_csv('regression_result/regression_BM_resid.csv', index=False)
 regression_Inv.to_csv('regression_result/regression_Inv.csv', index=False)
 regression_Inv_pvalue.to_csv('regression_result/regression_Inv_pvalue.csv', index=False)
 regression_Inv_tvalue.to_csv('regression_result/regression_Inv_tvalue.csv', index=False)
+regression_Inv_resid.to_csv('regression_result/regression_Inv_resid.csv', index=False)
 regression_OP.to_csv('regression_result/regression_OP.csv', index=False)
 regression_OP_pvalue.to_csv('regression_result/regression_OP_pvalue.csv', index=False)
 regression_OP_tvalue.to_csv('regression_result/regression_OP_tvalue.csv', index=False)
-
+regression_OP_resid.to_csv('regression_result/regression_OP_resid.csv', index=False)
 
 # 变量间相互回归
 regression_factors = pd.DataFrame(columns=['DepVar','Const','Mktrf','SMB','HML','RMW','CMA','R-squared'])

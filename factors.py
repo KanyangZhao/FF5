@@ -236,7 +236,7 @@ def FF5(t):
     res.to_csv(os.path.join("factor_result", t + "FF5.csv"), index=False)
 
 
-def PortfolioExcessReturn(t, row_type, row_num, col_type='Size', col_num=5, csv=True):
+def PortfolioExcessReturn(t, row_type, row_num, col_num=5, col_type='Size', csv=True):
     """
     指标分组计算组合
     :param t: 期号
@@ -278,9 +278,9 @@ def PortfolioExcessReturn(t, row_type, row_num, col_type='Size', col_num=5, csv=
 if __name__ == '__main__':
 
     FF5(['2016', '2017'])
-    PortfolioExcessReturn('2016', 'OP', 5)
-    PortfolioExcessReturn('2017', 'OP', 5)
-    PortfolioExcessReturn('2016', 'Inv', 5)
-    PortfolioExcessReturn('2017', 'Inv', 5)
-    PortfolioExcessReturn('2016', 'BM', 5)
-    PortfolioExcessReturn('2017', 'BM', 5)
+    PortfolioExcessReturn('2016', 'OP', 3, 3)
+    PortfolioExcessReturn('2017', 'OP', 3, 3)
+    PortfolioExcessReturn('2016', 'Inv', 3, 3)
+    PortfolioExcessReturn('2017', 'Inv', 3, 3)
+    PortfolioExcessReturn('2016', 'BM', 3, 3)
+    PortfolioExcessReturn('2017', 'BM', 3, 3)

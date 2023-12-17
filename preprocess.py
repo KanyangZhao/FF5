@@ -13,7 +13,7 @@ def convertCode(code) -> str:
     :param code: 股票代码
     :return: 6位标准代码
     """
-    return "{:06d}".format(int(code))
+    return "{:06d}".format(int(code)) #用于将整数 code 转换为一个包含6位数字的字符串 不足6位的部分在左侧用0填充
 
 
 def generateDate(start, end) -> list:
@@ -38,7 +38,7 @@ def excel2Df(directory: str, **kwargs) -> pd.DataFrame:
     # 储存dataframe的临时变量
     df_ls = []
     # 遍历文件夹下的所有excel
-    for root, dirs, files in os.walk(directory):
+    for root, _, files in os.walk(directory):
         for file in files:
             if file.endswith(".xlsx"):
                 df_ls.append(pd.read_excel(os.path.join(root, file), **kwargs))
